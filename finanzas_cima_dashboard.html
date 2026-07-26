@@ -1,0 +1,898 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+:root{ color-scheme: light; }
+*{box-sizing:border-box;}
+body{
+  margin:0; padding:24px; background:#f4f5f7;
+  font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  color:#1c2b36;
+}
+.wrap{max-width:1120px;margin:0 auto;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .logo{width:36px;height:36px;border-radius:50%;background:#0b3a63;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;}
+.brand h1{font-size:20px;margin:0;}
+.brand h1 span{color:#e2231a;}
+.brand small{display:block;color:#7a8894;font-weight:400;font-size:12px;}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;}
+.tab-btn{padding:8px 16px;border-radius:20px;border:1px solid #d8dde2;background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:#45525c;}
+.tab-btn.active{background:#0b3a63;color:#fff;border-color:#0b3a63;}
+.card{background:#fff;border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(20,30,40,.08);}
+.card h2{font-size:15px;margin:0 0 14px;color:#0b3a63;}
+.dropzone{border:2px dashed #b9cbe0; border-radius:14px; padding:28px; text-align:center; background:#f7fbff; cursor:pointer; transition:background .15s;}
+.dropzone:hover, .dropzone.drag{background:#eaf2fb;}
+.dropzone .big{font-size:15px;font-weight:700;color:#0b3a63;margin-bottom:6px;}
+.dropzone .small{font-size:12px;color:#7a8894;}
+.dropzone input{display:none;}
+#uploadLog{margin-top:14px;font-size:12.5px;line-height:1.7;}
+#uploadLog .ok{color:#0a8a3f;}
+#uploadLog .err{color:#c0201a;}
+#uploadLog .info{color:#45525c;}
+.field label{display:block;font-size:12px;font-weight:700;color:#45525c;margin-bottom:3px;}
+.field .hint{font-size:11px;color:#8b97a1;margin-bottom:5px;}
+.field input{width:100%;padding:8px 10px;border:1px solid #d8dde2;border-radius:8px;font-size:13px;}
+.grid-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 22px;}
+.section-title{grid-column:1/-1;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#0b3a63;border-bottom:2px solid #eef1f3;padding-bottom:6px;margin-top:8px;}
+.actions{display:flex;gap:10px;margin-top:16px;align-items:center;}
+button.primary{background:#e2231a;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;}
+button.secondary{background:#eef1f3;color:#334;border:none;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;}
+#formMsg{font-size:12px;font-weight:600;}
+#formMsg.err{color:#c0201a;}
+#formMsg.ok{color:#0a8a3f;}
+select#monthPicker{padding:8px 14px;border-radius:8px;border:1px solid #d8dde2;font-size:13px;font-weight:600;}
+.report-title{font-size:17px;font-weight:800;color:#1c2b36;margin-bottom:2px;}
+.report-sub{font-size:12px;color:#8b97a1;margin-bottom:18px;}
+.baseline-note{background:#fff8e6;border:1px solid #f0e0b0;color:#7a5c00;font-size:12px;padding:10px 14px;border-radius:8px;margin-bottom:14px;}
+
+.waterfall{display:flex;align-items:flex-end;gap:26px;height:260px;padding:0 8px 30px;position:relative;}
+.waterfall::after{content:"";position:absolute;left:8px;right:8px;bottom:30px;height:2px;background:#1c2b36;}
+.wf-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;}
+.wf-bar{width:56px;border-radius:3px 3px 0 0;}
+.wf-val{font-weight:800;font-size:14px;margin-bottom:6px;}
+.wf-label{position:absolute;bottom:-26px;font-size:12px;font-weight:700;text-align:center;width:100%;}
+.wf-pct{font-size:20px;font-weight:800;color:#0b3a63;margin-top:6px;}
+.green{color:#0a8a3f;} .red{color:#c0201a;} .navy{color:#0b3a63;}
+.bg-green{background:#00B050;} .bg-red{background:#FF0000;} .bg-navy{background:#173f5c;}
+
+.balglobal{display:flex;align-items:flex-end;gap:40px;justify-content:center;padding:10px 0 10px;flex-wrap:wrap;}
+.bg-block{width:150px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;color:#fff;padding-top:14px;font-weight:800;}
+.bg-block .lbl{font-size:15px;margin-bottom:14px;}
+.bg-block .val{font-size:19px;}
+.stackcol{display:flex;flex-direction:column;width:150px;border-radius:6px;overflow:hidden;color:#fff;font-weight:800;text-align:center;}
+.plus-sign{font-size:34px;font-weight:800;color:#0b3a63;align-self:center;margin-bottom:60px;}
+.totalside{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;}
+.total-num{font-size:19px;font-weight:800;color:#8b97a1;margin-top:10px;}
+.delta-bubble{border:3px solid;border-radius:50%;width:110px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;}
+.walkbox{font-size:13px;font-weight:800;text-align:center;line-height:1.5;color:#173f5c;}
+
+.desg-wrap{display:flex;gap:60px;justify-content:center;flex-wrap:wrap;}
+.desg-bars{display:flex;flex-direction:column-reverse;width:150px;border-radius:6px;overflow:hidden;height:340px;}
+.desg-bars .seg{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;text-align:center;padding:2px 4px;}
+.desg-labels{display:flex;flex-direction:column-reverse;height:340px;justify-content:space-between;}
+.desg-labels .row{display:flex;flex-direction:column;justify-content:center;flex:1;font-size:12px;}
+.desg-labels .row-inner{display:flex;align-items:center;gap:10px;height:100%;}
+.desg-labels .amt{font-weight:800;}
+.desg-labels .pct{font-weight:800;color:#1c2b36;margin-left:8px;}
+.desg-title{text-align:center;font-weight:800;color:#0b3a63;margin-bottom:10px;font-size:14px;}
+.desg-total{text-align:center;font-weight:800;color:#8b97a1;margin-top:10px;font-size:15px;}
+
+.kpi-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;}
+.kpi{flex:1;min-width:160px;background:#f7f9fa;border-radius:10px;padding:14px 16px;}
+.kpi .lab{font-size:11px;color:#8b97a1;font-weight:700;text-transform:uppercase;}
+.kpi .num{font-size:20px;font-weight:800;color:#0b3a63;margin-top:4px;}
+.kpi .num.neg{color:#c0201a;}
+.kpi .sub{font-size:11px;color:#8b97a1;margin-top:2px;}
+
+table.hist{width:100%;border-collapse:collapse;font-size:12.5px;}
+table.hist th{text-align:left;padding:8px 10px;background:#f4f5f7;color:#45525c;font-size:11px;text-transform:uppercase;}
+table.hist td{padding:8px 10px;border-top:1px solid #eef1f3;}
+table.hist tr:hover{background:#fafbfc;cursor:pointer;}
+.tag{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+.tag.pos{background:#e5f6ec;color:#0a8a3f;}
+.tag.neg{background:#fce9e8;color:#c0201a;}
+.tag.base{background:#eef1f3;color:#45525c;}
+.smallbtn{background:none;border:1px solid #d8dde2;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;color:#8b97a1;}
+.empty{color:#8b97a1;font-size:13px;text-align:center;padding:30px 0;}
+.compare-cols{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;}
+.compare-col{text-align:center;}
+.compare-col h3{font-size:13px;color:#8b97a1;margin-bottom:8px;}
+.compare-col .big{font-size:24px;font-weight:800;color:#0b3a63;}
+.delta-line{font-size:13px;font-weight:700;margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">CI</div>
+      <div>
+        <h1>cima<span>ingenier</span>IA <small style="display:inline">— Finanzas Cima</small></h1>
+        <small>Sube los PDFs del mes y el reporte se arma solo</small>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="subir">Subir PDFs</button>
+      <button class="tab-btn" data-tab="reporte">Reporte del mes</button>
+      <button class="tab-btn" data-tab="acumulado">Acumulado y Forecast</button>
+      <button class="tab-btn" data-tab="comparativo">Vs. Diciembre</button>
+      <button class="tab-btn" data-tab="historial">Historial</button>
+      <button class="tab-btn" data-tab="capturar">Captura manual</button>
+    </div>
+  </div>
+
+  <!-- TAB: SUBIR PDFS (principal) -->
+  <div id="tab-subir">
+    <div class="card">
+      <h2>Sube el Balance General y el Estado de Resultados del mes</h2>
+      <label class="dropzone" id="dropzone">
+        <div class="big">Arrastra aquí los 2 PDFs, o haz clic para elegirlos</div>
+        <div class="small">Los que te envía tu contador cada mes, tal cual — sin abrirlos ni cambiarles nada. Puedes soltar los 2 juntos o uno a la vez.</div>
+        <input type="file" id="fileInput" accept="application/pdf" multiple>
+      </label>
+      <div id="uploadLog"></div>
+    </div>
+  </div>
+
+  <!-- TAB: REPORTE -->
+  <div id="tab-reporte" style="display:none;">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div class="report-title" id="repTitle">—</div>
+          <div class="report-sub" id="repSub">Selecciona un mes para ver su reporte</div>
+        </div>
+        <select id="monthPicker"></select>
+      </div>
+    </div>
+    <div id="baselineNote"></div>
+    <div class="card" id="cardWaterfall">
+      <h2>Resumen del Estado de resultados</h2>
+      <div class="waterfall" id="waterfall"></div>
+    </div>
+    <div class="card">
+      <h2>Balance general global</h2>
+      <div class="balglobal" id="balglobal"></div>
+    </div>
+    <div class="card">
+      <h2>Balance general desglosado</h2>
+      <div class="desg-wrap" id="desglosado"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ACUMULADO -->
+  <div id="tab-acumulado" style="display:none;">
+    <div class="card">
+      <h2 id="acumTitle">Acumulado al corte</h2>
+      <div class="kpi-row" id="acumKpis"></div>
+      <div class="waterfall" id="acumWaterfall" style="margin-top:20px;"></div>
+    </div>
+    <div class="card">
+      <h2>Forecast cierre de año</h2>
+      <p style="font-size:12px;color:#8b97a1;margin-top:-8px;">Proyección simple: acumulado al corte ÷ meses transcurridos × 12. Run-rate de continuidad — no considera estacionalidad ni proyectos nuevos.</p>
+      <div class="kpi-row" id="forecastKpis"></div>
+    </div>
+  </div>
+
+  <!-- TAB: COMPARATIVO -->
+  <div id="tab-comparativo" style="display:none;">
+    <div class="card">
+      <h2 id="compTitle">Comparativo vs Diciembre 2025</h2>
+      <div class="compare-cols" id="compareView"></div>
+    </div>
+  </div>
+
+  <!-- TAB: HISTORIAL -->
+  <div id="tab-historial" style="display:none;">
+    <div class="card">
+      <h2>Meses capturados</h2>
+      <table class="hist" id="histTable"></table>
+    </div>
+  </div>
+
+  <!-- TAB: CAPTURAR (respaldo manual) -->
+  <div id="tab-capturar" style="display:none;">
+    <div class="card">
+      <h2>Captura manual (respaldo)</h2>
+      <p style="font-size:12px;color:#8b97a1;margin-top:-8px;">Solo si por alguna razón no puedes subir los PDFs. Columna "Periodo" del Estado de Resultados, saldos finales del Balance.</p>
+      <div class="grid-form">
+        <div class="field"><label>Mes</label><input id="f_mes" placeholder="Ej. Julio 2026"></div>
+        <div class="field"><label>Fecha de corte</label><input id="f_fecha" type="date"></div>
+        <div class="section-title">Balance General</div>
+        <div class="field"><label>Bancos</label><input id="f_bancos" type="number" step="0.01"></div>
+        <div class="field"><label>Clientes (Cuentas por cobrar)</label><input id="f_clientes" type="number" step="0.01"></div>
+        <div class="field"><label>Activo fijo neto</label><input id="f_activofijo" type="number" step="0.01"></div>
+        <div class="field"><label>Suma del Activo</label><input id="f_sumaactivo" type="number" step="0.01"></div>
+        <div class="field"><label>Proveedores</label><input id="f_proveedores" type="number" step="0.01"></div>
+        <div class="field"><label>Suma del Pasivo</label><input id="f_sumapasivo" type="number" step="0.01"></div>
+        <div class="field"><label>Suma del Capital</label><input id="f_sumacapital" type="number" step="0.01"></div>
+        <div class="section-title">Estado de Resultados (Periodo / Acumulado)</div>
+        <div class="field"><label>Ventas (Periodo)</label><input id="f_ventas" type="number" step="0.01"></div>
+        <div class="field"><label>Ventas Acumulado</label><input id="f_acumventas" type="number" step="0.01"></div>
+        <div class="field"><label>Costos (Periodo)</label><input id="f_costos" type="number" step="0.01"></div>
+        <div class="field"><label>Costos Acumulado</label><input id="f_acumcostos" type="number" step="0.01"></div>
+        <div class="field"><label>Gastos (Periodo)</label><input id="f_gastos" type="number" step="0.01"></div>
+        <div class="field"><label>Gastos Acumulado</label><input id="f_acumgastos" type="number" step="0.01"></div>
+        <div class="field"><label>RIF (Periodo)</label><input id="f_rif" type="number" step="0.01"></div>
+        <div class="field"><label>RIF Acumulado</label><input id="f_acumrif" type="number" step="0.01"></div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="btnSave">Guardar y generar reporte</button>
+        <button class="secondary" id="btnClear">Limpiar</button>
+        <span id="formMsg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Browser-portable PDF text extractor (no external libraries).
+// Works for the specific "CIMA Ingenieria Mexicana" accounting-software PDF exports.
+
+const GLYPHNAME = {
+  space:' ', comma:',', period:'.', hyphen:'-', minus:'-', colon:':', percent:'%', slash:'/',
+  parenleft:'(', parenright:')', quotesingle:"'", ellipsis:'…', bullet:'•',
+  zero:'0', one:'1', two:'2', three:'3', four:'4', five:'5', six:'6', seven:'7', eight:'8', nine:'9',
+  aacute:'á', eacute:'é', iacute:'í', oacute:'ó', uacute:'ú', ntilde:'ñ',
+  Aacute:'Á', Eacute:'É', Iacute:'Í', Oacute:'Ó', Uacute:'Ú', Ntilde:'Ñ',
+  uuml:'ü', Uuml:'Ü', degree:'°'
+};
+function glyphToChar(name){
+  if(GLYPHNAME[name]!==undefined) return GLYPHNAME[name];
+  if(name.length===1) return name;
+  return '?';
+}
+
+function bytesToLatin1(u8){
+  let s = '';
+  const CHUNK = 0x8000;
+  for(let i=0;i<u8.length;i+=CHUNK){
+    s += String.fromCharCode.apply(null, u8.subarray(i, i+CHUNK));
+  }
+  return s;
+}
+function latin1ToBytes(str, start, end){
+  const len = end-start;
+  const out = new Uint8Array(len);
+  for(let i=0;i<len;i++) out[i] = str.charCodeAt(start+i) & 0xFF;
+  return out;
+}
+
+async function inflateLenient(u8){
+  const ds = new DecompressionStream('deflate');
+  const writer = ds.writable.getWriter();
+  writer.write(u8);
+  writer.close().catch(()=>{});
+  const reader = ds.readable.getReader();
+  const chunks = [];
+  try{
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      chunks.push(value);
+    }
+  }catch(e){ /* salvage whatever decoded before the error */ }
+  const total = chunks.reduce((a,c)=>a+c.length,0);
+  const out = new Uint8Array(total);
+  let off=0; for(const c of chunks){ out.set(c,off); off+=c.length; }
+  return out;
+}
+
+function findObjects(txt){
+  const objs = {};
+  const re = /(\d+)\s+\d+\s+obj([\s\S]*?)endobj/g;
+  let m;
+  while((m = re.exec(txt))) objs[m[1]] = m[2];
+  return objs;
+}
+
+function parseDifferences(diffStr){
+  const map = {};
+  const tokRe = /(-?\d+)|\/([A-Za-z0-9_.]+)/g;
+  let cur=null, t;
+  while((t = tokRe.exec(diffStr))){
+    if(t[1]!==undefined) cur = parseInt(t[1],10);
+    else if(t[2]!==undefined && cur!==null){ map[cur]=glyphToChar(t[2]); cur++; }
+  }
+  return map;
+}
+
+function buildFontDecodeMaps(txt, objs){
+  const fontDecodeByObj = {};
+  for(const num in objs){
+    const content = objs[num];
+    if(!/\/Differences/.test(content)) continue;
+    const dm = content.match(/\/Differences\s*\[([^\]]*)\]/);
+    if(dm) fontDecodeByObj[num] = parseDifferences(dm[1]);
+  }
+  const fontToDecode = {};
+  for(const num in objs){
+    const content = objs[num];
+    if(!/\/Type\s*\/Font\b/.test(content)) continue;
+    const encRef = content.match(/\/Encoding\s+(\d+)\s+\d+\s+R/);
+    const encInline = content.match(/\/Encoding\s*<<([\s\S]*?)>>/);
+    if(encRef && fontDecodeByObj[encRef[1]]) fontToDecode[num] = fontDecodeByObj[encRef[1]];
+    else if(encInline){
+      const dm = encInline[1].match(/\/Differences\s*\[([^\]]*)\]/);
+      fontToDecode[num] = dm ? parseDifferences(dm[1]) : null;
+    } else fontToDecode[num] = null;
+  }
+  const resourceToFontObj = {};
+  const fontDictRe = /\/Font\s*<<([^>]*)>>/g;
+  let fm;
+  while((fm = fontDictRe.exec(txt))){
+    const entryRe = /\/(F\w*\d+|[A-Za-z0-9]+)\s+(\d+)\s+\d+\s+R/g;
+    let em;
+    while((em = entryRe.exec(fm[1]))) resourceToFontObj[em[1]] = em[2];
+  }
+  const resourceDecodeMap = {};
+  for(const rname in resourceToFontObj){
+    const fnum = resourceToFontObj[rname];
+    resourceDecodeMap[rname] = fontToDecode[fnum]!==undefined ? fontToDecode[fnum] : null;
+  }
+  return resourceDecodeMap;
+}
+
+function decodeLiteralWithMap(raw, map){
+  let out='';
+  for(let i=0;i<raw.length;i++){
+    const code = raw.charCodeAt(i);
+    out += (map && map[code]!==undefined) ? map[code] : raw[i];
+  }
+  return out;
+}
+function unescapeLiteral(tok){
+  let s = tok.slice(1,-1);
+  return s.replace(/\\\(/g,'(').replace(/\\\)/g,')').replace(/\\\\/g,'\\').replace(/\\n/g,'').replace(/\\r/g,'');
+}
+function decodeToken(tok, map){
+  if(tok[0]==='(') return decodeLiteralWithMap(unescapeLiteral(tok), map);
+  if(tok[0]==='<'){ let out=''; const hex=tok.slice(1,-1); for(let i=0;i<hex.length;i+=4) out+='�'; return out; }
+  return '';
+}
+
+function extractTextItems(streamText, resourceDecodeMap){
+  const items = [];
+  let x=0,y=0,curFont=null,inText=false;
+  const tokRe = /\bBT\b|\bET\b|\/(F\w*\d*)\s+[\d.]+\s+Tf|(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+Tm|(-?[\d.]+)\s+(-?[\d.]+)\s+Td|(-?[\d.]+)\s+(-?[\d.]+)\s+TD|((?:\((?:[^()\\]|\\.)*\)|<[0-9A-Fa-f]+>)+)\s*Tj|(\[(?:[^\[\]]|\\.)*\])\s*TJ/g;
+  let m;
+  while((m = tokRe.exec(streamText))){
+    const whole = m[0];
+    if(whole==='BT'){ inText=true; x=0; y=0; continue; }
+    if(whole==='ET'){ inText=false; continue; }
+    if(m[1]!==undefined){ curFont=m[1]; continue; }
+    if(m[2]!==undefined){ x=parseFloat(m[6]); y=parseFloat(m[7]); continue; }
+    if(m[8]!==undefined){ x+=parseFloat(m[8]); y+=parseFloat(m[9]); continue; }
+    if(m[10]!==undefined){ x+=parseFloat(m[10]); y+=parseFloat(m[11]); continue; }
+    if(m[12]!==undefined){
+      if(!inText) continue;
+      const str = decodeToken(m[12], resourceDecodeMap[curFont]);
+      if(str) items.push({x,y,str});
+      continue;
+    }
+    if(m[13]!==undefined){
+      if(!inText) continue;
+      const partRe = /\((?:[^()\\]|\\.)*\)|<[0-9A-Fa-f]+>/g;
+      let pm, combined='';
+      while((pm = partRe.exec(m[13]))) combined += decodeToken(pm[0], resourceDecodeMap[curFont]);
+      if(combined) items.push({x,y,str:combined});
+    }
+  }
+  return items;
+}
+
+function reconstructLines(items, xSplit){
+  const TOL = 2.0;
+  function build(itemSet){
+    const lines = [];
+    for(const it of itemSet){
+      let line = lines.find(l=>Math.abs(l.y-it.y)<TOL);
+      if(!line){ line={y:it.y, items:[]}; lines.push(line); }
+      line.items.push(it);
+    }
+    lines.sort((a,b)=>b.y-a.y);
+    return lines.map(l=>{ l.items.sort((a,b)=>a.x-b.x); return l.items.map(i=>i.str).join(' '); });
+  }
+  if(xSplit==null) return build(items);
+  return { left: build(items.filter(i=>i.x<xSplit)), right: build(items.filter(i=>i.x>=xSplit)) };
+}
+
+async function extractInflatedStreams(u8, txt){
+  const out = [];
+  let idx = 0;
+  const CONTEXT = 400;
+  while(true){
+    const sIdx = txt.indexOf('stream', idx);
+    if(sIdx===-1) break;
+    let dataStart = sIdx+6;
+    if(txt.charCodeAt(dataStart)===13) dataStart++;
+    if(txt.charCodeAt(dataStart)===10) dataStart++;
+    const ctxStart = Math.max(0, sIdx-CONTEXT);
+    const ctx = txt.slice(ctxStart, sIdx);
+    const lenMatches = [...ctx.matchAll(/\/Length\s+(\d+)(?!\s+\d+\s+R)/g)];
+    let dataEnd;
+    if(lenMatches.length){
+      dataEnd = dataStart + parseInt(lenMatches[lenMatches.length-1][1],10);
+    } else {
+      const eIdx = txt.indexOf('endstream', dataStart);
+      dataEnd = eIdx===-1 ? dataStart : eIdx;
+      while(dataEnd>dataStart && (txt.charCodeAt(dataEnd-1)===10||txt.charCodeAt(dataEnd-1)===13)) dataEnd--;
+    }
+    const blobBytes = latin1ToBytes(txt, dataStart, Math.min(dataEnd, txt.length));
+    const inflated = await inflateLenient(blobBytes);
+    if(inflated.length) out.push(bytesToLatin1(inflated));
+    const nextEndstream = txt.indexOf('endstream', dataEnd>dataStart?dataEnd-1:dataStart);
+    idx = nextEndstream===-1 ? dataStart+1 : nextEndstream+9;
+  }
+  return out;
+}
+
+async function parsePdfToLines(arrayBuffer, xSplit){
+  const u8 = new Uint8Array(arrayBuffer);
+  const txt = bytesToLatin1(u8);
+  const objs = findObjects(txt);
+  const resourceDecodeMap = buildFontDecodeMaps(txt, objs);
+  const streamTexts = await extractInflatedStreams(u8, txt);
+  const combined = streamTexts.filter(t=>t.includes('BT')||t.includes('Tj')||t.includes('TJ')).join('\n');
+  const items = extractTextItems(combined, resourceDecodeMap);
+  return reconstructLines(items, xSplit);
+}
+
+function firstNum(line){
+  if(!line) return null;
+  const m = line.match(/-?[\d,]+\.\d{2}/);
+  return m ? parseFloat(m[0].replace(/,/g,'')) : null;
+}
+function findLine(lines, needle){ return lines.find(l=>l.includes(needle)); }
+
+async function extractBalance(arrayBuffer){
+  const {left, right} = await parsePdfToLines(arrayBuffer, 300);
+  const bancos = firstNum(findLine(left,'Bancos'));
+  const clientes = firstNum(findLine(left,'Clientes'));
+  const sumaActivo = firstNum(findLine(left,'Suma del Activo'));
+  const proveedores = firstNum(findLine(right,'Proveedores'));
+  const sumaPasivo = firstNum(findLine(right,'Suma del Pasivo'));
+  const sumaCapital = firstNum(findLine(right,'Suma del Capital'));
+  const idxM = left.findIndex(l=>l.includes('Maquinaria y equipo'));
+  const idxS = left.findIndex(l=>l.includes('Suma del Activo'));
+  let vals=[];
+  if(idxM>=0 && idxS>idxM){
+    for(let i=idxM;i<idxS;i++){ const n=firstNum(left[i]); if(n!==null) vals.push(n); }
+  }
+  const activoFijo = vals.slice(0,8).reduce((a,b)=>a+b,0);
+  return {bancos, clientes, activoFijo, sumaActivo, proveedores, sumaPasivo, sumaCapital,
+    _diag: {idxM, idxS, nvals: vals.length}};
+}
+
+async function extractEstadoResultados(arrayBuffer){
+  const lines = await parsePdfToLines(arrayBuffer);
+  function twoNums(line){
+    if(!line) return [null,null];
+    const ms = [...line.matchAll(/-?[\d,]+\.\d{2}/g)].map(m=>parseFloat(m[0].replace(/,/g,'')));
+    return [ms[0]!==undefined?ms[0]:null, ms[2]!==undefined?ms[2]:null];
+  }
+  const [ventas, acumVentas] = twoNums(findLine(lines,'Total Ingresos:'));
+  const [costos, acumCostos] = twoNums(lines.find(l=>/^Costos\b/.test(l)));
+  const [gastos, acumGastos] = twoNums(lines.find(l=>/^Gastos\b/.test(l)));
+  const [rif, acumRif] = twoNums(findLine(lines,'Resultado integral de financiamiento'));
+  return {ventas, costos, gastos, rif, acumVentas, acumCostos, acumGastos, acumRif};
+}
+
+// export for Node testing; in the browser these are just top-level functions in the artifact
+
+// ============ Dashboard data & rendering (same model as before) ============
+const SEED = [
+{"mes":"Diciembre 2025","fecha":"2025-12-31","isBaseline":true,"bancos":2900000,"clientes":23400000,"activoFijo":1800000,"sumaActivo":38600000,"proveedores":17600000,"sumaPasivo":28100000,"sumaCapital":10500000,"ventas":null,"costos":null,"gastos":null,"rif":null,"acumVentas":null,"acumCostos":null,"acumGastos":null,"acumRif":null},
+{"mes":"Enero 2026","fecha":"2026-01-31","isBaseline":false,"bancos":2909927.25,"clientes":23476050.33,"activoFijo":1893956.34,"sumaActivo":39414609.29,"proveedores":17685455.16,"sumaPasivo":29593614.19,"sumaCapital":9820995.17,"ventas":3394335.16,"costos":674419.36,"gastos":3492396.98,"rif":63069.28,"acumVentas":3394335.16,"acumCostos":674419.36,"acumGastos":3492396.98,"acumRif":63069.28},
+{"mes":"Febrero 2026","fecha":"2026-02-28","isBaseline":false,"bancos":2913768.91,"clientes":24256252.66,"activoFijo":1899164.67,"sumaActivo":40387039.51,"proveedores":18024865.99,"sumaPasivo":31227530.52,"sumaCapital":9159509.06,"ventas":1262259.57,"costos":735875.82,"gastos":1136705.99,"rif":51163.87,"acumVentas":4656594.73,"acumCostos":1410295.18,"acumGastos":4629102.97,"acumRif":114233.15},
+{"mes":"Marzo 2026","fecha":"2026-03-31","isBaseline":false,"bancos":2938471.06,"clientes":26691632.81,"activoFijo":1873123.02,"sumaActivo":43064312.12,"proveedores":17768520.66,"sumaPasivo":31221586.64,"sumaCapital":11842725.55,"ventas":6405478.43,"costos":1185859.89,"gastos":2359996.57,"rif":79106.09,"acumVentas":11062073.16,"acumCostos":2655317.27,"acumGastos":7009932.86,"acumRif":193339.24},
+{"mes":"Abril 2026","fecha":"2026-04-30","isBaseline":false,"bancos":2899431.61,"clientes":21941292.20,"activoFijo":2039914.69,"sumaActivo":38711690.46,"proveedores":16470711.11,"sumaPasivo":27461554.80,"sumaCapital":11250135.73,"ventas":5447464.50,"costos":769817.55,"gastos":5149214.40,"rif":121022.37,"acumVentas":16509537.66,"acumCostos":3442438.69,"acumGastos":12159147.26,"acumRif":314361.61},
+{"mes":"Mayo 2026","fecha":"2026-05-31","isBaseline":false,"bancos":2888022.09,"clientes":21333486.58,"activoFijo":2034706.36,"sumaActivo":38354496.04,"proveedores":16377039.86,"sumaPasivo":27413084.31,"sumaCapital":10941411.80,"ventas":1397894.43,"costos":515129.74,"gastos":1156556.34,"rif":34932.28,"acumVentas":17907432.09,"acumCostos":3957568.43,"acumGastos":13315703.60,"acumRif":349293.89},
+{"mes":"Junio 2026","fecha":"2026-06-30","isBaseline":false,"bancos":2974629.86,"clientes":22084549.85,"activoFijo":2029498.03,"sumaActivo":39131031.44,"proveedores":15786075.07,"sumaPasivo":27411802.36,"sumaCapital":11719229.15,"ventas":2035201.90,"costos":295024.08,"gastos":915659.42,"rif":46701.05,"acumVentas":19942633.99,"acumCostos":4252592.51,"acumGastos":14231363.02,"acumRif":395994.94}
+]
+;
+const STORE_KEY = "cima_finanzas_meses_v3";
+
+function loadMonths(){
+  let raw = localStorage.getItem(STORE_KEY);
+  if(!raw){ localStorage.setItem(STORE_KEY, JSON.stringify(SEED)); return JSON.parse(JSON.stringify(SEED)); }
+  try{ return JSON.parse(raw); }catch(e){ return JSON.parse(JSON.stringify(SEED)); }
+}
+function saveMonths(list){
+  list.sort((a,b)=> new Date(a.fecha) - new Date(b.fecha));
+  localStorage.setItem(STORE_KEY, JSON.stringify(list));
+}
+let MONTHS = loadMonths();
+
+function fmtM(v){ if(v==null) return "—"; const s=(Math.abs(v)/1e6).toFixed(1); return (v<0?"-":"")+"$"+s+"M"; }
+function fmtMNoSign(v){ if(v==null) return "—"; const s=(Math.abs(v)/1e6).toFixed(1); return (v<0?"-":"+")+s+"M"; }
+function pct(v){ return v.toFixed(1)+"%"; }
+function realMonths(){ return MONTHS.filter(m=>!m.isBaseline); }
+function baselineMonth(){ return MONTHS.find(m=>m.isBaseline); }
+
+function computeDerived(m, prev){
+  const invref = m.sumaActivo - m.bancos - m.clientes - m.activoFijo;
+  const otrospasivos = m.sumaPasivo - m.proveedores;
+  const d = {
+    invref, otrospasivos,
+    cxcPct: m.clientes/m.sumaActivo*100,
+    invrefPct: invref/m.sumaActivo*100,
+    bancosPct: m.bancos/m.sumaActivo*100,
+    activofijoPct: m.activoFijo/m.sumaActivo*100,
+    capitalPct: m.sumaCapital/m.sumaActivo*100,
+    otrospasivosPct: otrospasivos/m.sumaActivo*100,
+    cxpPct: m.proveedores/m.sumaActivo*100,
+    deltaCapital: prev ? (m.sumaCapital - prev.sumaCapital) : null,
+    prevCapital: prev ? prev.sumaCapital : null,
+    balanceCheck: Math.abs(m.sumaActivo - (m.sumaPasivo+m.sumaCapital)) / m.sumaActivo * 100
+  };
+  if(!m.isBaseline){
+    d.margenBruto = m.ventas - m.costos;
+    d.costoOperativo = m.gastos + m.rif;
+    d.utilidad = d.margenBruto - d.costoOperativo;
+    d.margenPct = d.margenBruto/m.ventas*100;
+  }
+  return d;
+}
+
+function drawWaterfall(container, ventas, costos, gastos, rif){
+  const margenBruto = ventas - costos;
+  const costoOperativo = gastos + rif;
+  const utilidad = margenBruto - costoOperativo;
+  const margenPct = margenBruto/ventas*100;
+  const vals = [
+    {label:"Ventas", val:ventas, cls:"bg-green", txtcls:"green"},
+    {label:"Costo de ventas", val:-costos, cls:"bg-red", txtcls:"red"},
+    {label:"Margen bruto", val:margenBruto, cls:"bg-navy", txtcls:"navy"},
+    {label:"Costo operativo", val:-costoOperativo, cls:"bg-red", txtcls:"red"},
+    {label: utilidad>=0 ? "Utilidad" : "Pérdida", val:utilidad, cls: utilidad>=0?"bg-green":"bg-red", txtcls: utilidad>=0?"green":"red"},
+  ];
+  const maxAbs = Math.max(...vals.map(v=>Math.abs(v.val)));
+  const maxPx = 190;
+  let html = "";
+  vals.forEach((v,i)=>{
+    const h = Math.max(18, Math.abs(v.val)/maxAbs*maxPx);
+    html += `<div class="wf-col">`;
+    if(i===2){ html += `<div class="wf-pct" style="margin-bottom:6px;">${pct(margenPct)}</div>`; }
+    html += `<div class="wf-val ${v.txtcls}">${fmtMNoSign(v.val).replace('+','')}</div>`;
+    html += `<div class="wf-bar ${v.cls}" style="height:${h}px;"></div>`;
+    html += `<div class="wf-label">${v.label}</div>`;
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderBalGlobal(m, d){
+  const deltaTxt = d.deltaCapital==null ? "—" : fmtMNoSign(d.deltaCapital);
+  const isPos = d.deltaCapital==null ? true : d.deltaCapital>=0;
+  const walk = d.prevCapital==null ? ["—", deltaTxt, fmtM(m.sumaCapital)] : [fmtM(d.prevCapital), deltaTxt, fmtM(m.sumaCapital)];
+  const html = `
+    <div class="bg-block" style="background:#00B050;height:260px;">
+      <div class="lbl">Activos</div><div class="val">${fmtM(m.sumaActivo)}</div>
+    </div>
+    <div class="stackcol" style="height:260px;">
+      <div class="seg" style="background:#FF0000;flex:${d.otrospasivosPct+d.cxpPct};display:flex;align-items:center;justify-content:center;">
+        <div><div style="font-size:15px;">Pasivos</div><div style="font-size:17px;">${fmtM(m.sumaPasivo)}</div></div>
+      </div>
+      <div class="seg" style="background:#173f5c;flex:${d.capitalPct};display:flex;align-items:center;justify-content:center;">
+        <div><div style="font-size:13px;">Capital</div><div style="font-size:15px;">${fmtM(m.sumaCapital)}</div></div>
+      </div>
+    </div>
+    <div class="plus-sign">+</div>
+    <div class="totalside">
+      <div class="total-num">${fmtM(m.sumaActivo)}</div>
+      <div class="delta-bubble" style="border-color:${isPos?'#00B050':'#FF0000'};">
+        <div style="color:${isPos?'#0a8a3f':'#c0201a'};font-weight:800;">${deltaTxt}</div>
+        <div style="font-size:11px;font-weight:800;margin-top:4px;">${d.deltaCapital==null?'':(isPos?'Utilidad':'Pérdida')}</div>
+      </div>
+      <div class="walkbox">${walk[0]}<span style="display:block;color:${isPos?'#0a8a3f':'#c0201a'}">${walk[1]}</span>${walk[2]}</div>
+    </div>`;
+  document.getElementById('balglobal').innerHTML = html;
+}
+
+function renderDesglosado(m, d){
+  const activos = [
+    {label:"AF. Transporte / Herramientas", val:m.activoFijo, pct:d.activofijoPct, color:"#c9ecd7"},
+    {label:"Bancos", val:m.bancos, pct:d.bancosPct, color:"#8fd8ab"},
+    {label:"Inv. Materiales, pagos anticipados", val:d.invref, pct:d.invrefPct, color:"#3fbf74"},
+    {label:"Cuentas por cobrar", val:m.clientes, pct:d.cxcPct, color:"#00B050"},
+  ];
+  const pasivos = [
+    {label:"Proveedores (Cuentas por pagar)", val:m.proveedores, pct:d.cxpPct, color:"#8a0e0e"},
+    {label:"Otros pasivos / Impuestos", val:d.otrospasivos, pct:d.otrospasivosPct, color:"#FF0000"},
+    {label:"Capital", val:m.sumaCapital, pct:d.capitalPct, color:"#173f5c"},
+  ];
+  function col(title, items, total){
+    let bars = items.map(it=>`<div class="seg" style="background:${it.color};flex:${it.pct};">${it.label}</div>`).join("");
+    let labels = items.map(it=>`<div class="row"><div class="row-inner"><span class="amt">${fmtM(it.val)}</span><span class="pct">${pct(it.pct)}</span></div></div>`).join("");
+    return `<div><div class="desg-title">${title}</div><div style="display:flex;gap:12px;"><div class="desg-labels">${labels}</div><div class="desg-bars">${bars}</div></div><div class="desg-total">${fmtM(total)}</div></div>`;
+  }
+  document.getElementById('desglosado').innerHTML = col("Activos", activos, m.sumaActivo) + col("Pasivos + Capital", pasivos, m.sumaActivo);
+}
+
+function renderReport(idx){
+  if(MONTHS.length===0) return;
+  const m = MONTHS[idx];
+  const prev = idx>0 ? MONTHS[idx-1] : null;
+  const d = computeDerived(m, prev);
+  document.getElementById('repTitle').textContent = "Finanzas Cima — " + m.mes;
+  document.getElementById('repSub').textContent = "Corte al " + m.fecha;
+  const baseNoteEl = document.getElementById('baselineNote');
+  const wfCard = document.getElementById('cardWaterfall');
+  if(m.isBaseline){
+    baseNoteEl.innerHTML = '<div class="baseline-note">Diciembre 2025 es la línea base (solo Balance General, tomada del PPTX original). No tiene Estado de Resultados propio.</div>';
+    wfCard.style.display = 'none';
+  } else {
+    baseNoteEl.innerHTML = '';
+    wfCard.style.display = 'block';
+    drawWaterfall(document.getElementById('waterfall'), m.ventas, m.costos, m.gastos, m.rif);
+  }
+  renderBalGlobal(m,d);
+  renderDesglosado(m,d);
+}
+
+function renderAcumulado(){
+  const real = realMonths();
+  if(real.length===0){
+    document.getElementById('acumKpis').innerHTML = "<div class='empty'>Sin meses capturados</div>";
+    document.getElementById('forecastKpis').innerHTML = "";
+    return;
+  }
+  const last = real[real.length-1];
+  const nMeses = real.length;
+  document.getElementById('acumTitle').textContent = `Acumulado Enero–${last.mes.split(" ")[0]} ${last.fecha.slice(0,4)}`;
+  const utilAcum = last.acumVentas - last.acumCostos - last.acumGastos - last.acumRif;
+  document.getElementById('acumKpis').innerHTML = `
+    <div class="kpi"><div class="lab">Ventas acumuladas</div><div class="num">${fmtM(last.acumVentas)}</div><div class="sub">${nMeses} meses</div></div>
+    <div class="kpi"><div class="lab">Costos acumulados</div><div class="num">${fmtM(last.acumCostos)}</div></div>
+    <div class="kpi"><div class="lab">Gastos + RIF acumulados</div><div class="num">${fmtM(last.acumGastos+last.acumRif)}</div></div>
+    <div class="kpi"><div class="lab">${utilAcum>=0?'Utilidad':'Pérdida'} acumulada</div><div class="num ${utilAcum<0?'neg':''}">${fmtMNoSign(utilAcum)}</div></div>
+  `;
+  drawWaterfall(document.getElementById('acumWaterfall'), last.acumVentas, last.acumCostos, last.acumGastos, last.acumRif);
+  const factor = 12/nMeses;
+  const fVentas = last.acumVentas*factor, fCostos=last.acumCostos*factor, fGastos=last.acumGastos*factor, fRif=last.acumRif*factor;
+  const fUtil = fVentas-fCostos-fGastos-fRif;
+  document.getElementById('forecastKpis').innerHTML = `
+    <div class="kpi"><div class="lab">Ventas estimadas cierre de año</div><div class="num">${fmtM(fVentas)}</div></div>
+    <div class="kpi"><div class="lab">Costos + Gastos estimados</div><div class="num">${fmtM(fCostos+fGastos+fRif)}</div></div>
+    <div class="kpi"><div class="lab">${fUtil>=0?'Utilidad':'Pérdida'} estimada al cierre</div><div class="num ${fUtil<0?'neg':''}">${fmtMNoSign(fUtil)}</div><div class="sub">Run-rate x${factor.toFixed(2)} sobre ${nMeses} meses reales</div></div>
+  `;
+}
+
+function renderComparativo(){
+  const base = baselineMonth();
+  const real = realMonths();
+  if(!base || real.length===0){ document.getElementById('compareView').innerHTML="<div class='empty'>Falta línea base o meses reales</div>"; return; }
+  const last = real[real.length-1];
+  document.getElementById('compTitle').textContent = `Diciembre 2025 vs ${last.mes}`;
+  function line(lbl, a, b){
+    const delta = b-a; const pctd = (delta/Math.abs(a)*100);
+    const cls = delta>=0?'green':'red';
+    return `<div class="delta-line ${cls}">${lbl}: ${fmtMNoSign(delta)} (${pctd>=0?'+':''}${pctd.toFixed(1)}%)</div>`;
+  }
+  document.getElementById('compareView').innerHTML = `
+    <div class="compare-col"><h3>Diciembre 2025</h3><div class="big">${fmtM(base.sumaActivo)}</div><div style="font-size:11px;color:#8b97a1;">Activos</div></div>
+    <div class="compare-col"><h3>${last.mes}</h3><div class="big">${fmtM(last.sumaActivo)}</div><div style="font-size:11px;color:#8b97a1;">Activos</div></div>
+    <div class="compare-col" style="min-width:220px;">
+      <h3>Variación</h3>
+      ${line('Activos', base.sumaActivo, last.sumaActivo)}
+      ${line('Pasivos', base.sumaPasivo, last.sumaPasivo)}
+      ${line('Capital', base.sumaCapital, last.sumaCapital)}
+    </div>
+  `;
+}
+
+function fillPicker(){
+  const sel = document.getElementById('monthPicker');
+  sel.innerHTML = MONTHS.map((m,i)=>`<option value="${i}">${m.mes}${m.isBaseline?' (base)':''}</option>`).join("");
+  sel.value = MONTHS.length-1;
+  sel.onchange = ()=> renderReport(parseInt(sel.value));
+}
+
+function renderHistory(){
+  const tbl = document.getElementById('histTable');
+  if(MONTHS.length===0){ tbl.innerHTML = "<tr><td class='empty'>Sin meses capturados</td></tr>"; return; }
+  let rows = "<tr><th>Mes</th><th>Ventas</th><th>Utilidad/Pérdida</th><th>Activos</th><th>Capital</th><th></th></tr>";
+  MONTHS.forEach((m,i)=>{
+    const prev = i>0?MONTHS[i-1]:null;
+    const d = computeDerived(m, prev);
+    let midCell;
+    if(m.isBaseline){ midCell = `<span class="tag base">línea base</span>`; }
+    else{ const tagCls = d.utilidad>=0?"pos":"neg"; midCell = `<span class="tag ${tagCls}">${fmtMNoSign(d.utilidad)}</span>`; }
+    rows += `<tr data-idx="${i}">
+      <td><b>${m.mes}</b></td>
+      <td>${m.isBaseline?'—':fmtM(m.ventas)}</td>
+      <td>${midCell}</td>
+      <td>${fmtM(m.sumaActivo)}</td>
+      <td>${fmtM(m.sumaCapital)}</td>
+      <td><button class="smallbtn" onclick="deleteMonth(${i})">Eliminar</button></td>
+    </tr>`;
+  });
+  tbl.innerHTML = rows;
+  Array.from(tbl.querySelectorAll('tr[data-idx]')).forEach(tr=>{
+    tr.addEventListener('click', (e)=>{
+      if(e.target.tagName==='BUTTON') return;
+      const i = parseInt(tr.getAttribute('data-idx'));
+      switchTab('reporte');
+      document.getElementById('monthPicker').value = i;
+      renderReport(i);
+    });
+  });
+}
+
+function deleteMonth(i){
+  if(!confirm("¿Eliminar " + MONTHS[i].mes + " del historial?")) return;
+  MONTHS.splice(i,1);
+  saveMonths(MONTHS);
+  refreshAll();
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  ['subir','reporte','acumulado','comparativo','historial','capturar'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = (t===name)?'block':'none';
+  });
+}
+document.querySelectorAll('.tab-btn').forEach(b=> b.addEventListener('click', ()=>switchTab(b.dataset.tab)));
+
+function refreshAll(){
+  fillPicker(); renderHistory(); renderAcumulado(); renderComparativo();
+  renderReport(MONTHS.length-1);
+}
+
+// ============ Manual capture (fallback) ============
+document.getElementById('btnClear').addEventListener('click', ()=>{
+  ['f_mes','f_fecha','f_bancos','f_clientes','f_activofijo','f_sumaactivo','f_proveedores','f_sumapasivo','f_sumacapital','f_ventas','f_acumventas','f_costos','f_acumcostos','f_gastos','f_acumgastos','f_rif','f_acumrif'].forEach(id=>{
+    document.getElementById(id).value = "";
+  });
+  document.getElementById('formMsg').textContent = "";
+});
+
+document.getElementById('btnSave').addEventListener('click', ()=>{
+  const get = id => document.getElementById(id).value;
+  const mes = get('f_mes').trim();
+  const fecha = get('f_fecha');
+  const nums = ['f_bancos','f_clientes','f_activofijo','f_sumaactivo','f_proveedores','f_sumapasivo','f_sumacapital','f_ventas','f_acumventas','f_costos','f_acumcostos','f_gastos','f_acumgastos','f_rif','f_acumrif'];
+  const msgEl = document.getElementById('formMsg');
+  if(!mes || !fecha){ msgEl.textContent="Falta el nombre del mes o la fecha de corte."; msgEl.className="err"; return; }
+  for(const id of nums){ if(get(id)===""){ msgEl.textContent="Faltan cifras por capturar."; msgEl.className="err"; return; } }
+  const m = {
+    mes, fecha, isBaseline:false,
+    bancos: parseFloat(get('f_bancos')), clientes: parseFloat(get('f_clientes')),
+    activoFijo: parseFloat(get('f_activofijo')), sumaActivo: parseFloat(get('f_sumaactivo')),
+    proveedores: parseFloat(get('f_proveedores')), sumaPasivo: parseFloat(get('f_sumapasivo')),
+    sumaCapital: parseFloat(get('f_sumacapital')),
+    ventas: parseFloat(get('f_ventas')), acumVentas: parseFloat(get('f_acumventas')),
+    costos: parseFloat(get('f_costos')), acumCostos: parseFloat(get('f_acumcostos')),
+    gastos: parseFloat(get('f_gastos')), acumGastos: parseFloat(get('f_acumgastos')),
+    rif: parseFloat(get('f_rif')), acumRif: parseFloat(get('f_acumrif')),
+  };
+  upsertMonth(m);
+  msgEl.className="ok"; msgEl.textContent = "Guardado y reporte generado ✓";
+  switchTab('reporte');
+});
+
+function upsertMonth(m){
+  const check = Math.abs(m.sumaActivo - (m.sumaPasivo+m.sumaCapital)) / m.sumaActivo * 100;
+  MONTHS = MONTHS.filter(x=>x.fecha!==m.fecha);
+  MONTHS.push(m);
+  saveMonths(MONTHS);
+  refreshAll();
+  const idx = MONTHS.findIndex(x=>x.fecha===m.fecha);
+  document.getElementById('monthPicker').value = idx;
+  renderReport(idx);
+  return check;
+}
+
+// ============ PDF upload flow ============
+const MESES_ES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+function logMsg(text, cls){
+  const el = document.getElementById('uploadLog');
+  const line = document.createElement('div');
+  line.className = cls||'info';
+  line.textContent = text;
+  el.appendChild(line);
+}
+
+function detectDocType(lines){
+  const joined = lines.join(' ');
+  if(/Estado de resultados/i.test(joined)) return 'ER';
+  if(/Balance General|Posici.n Financiera/i.test(joined)) return 'BAL';
+  return 'UNKNOWN';
+}
+
+function extractCutoffDate(lines, docType){
+  const joined = lines.join(' ');
+  let m;
+  if(docType==='BAL'){
+    m = joined.match(/al\s+(\d{2})\/(\d{2})\/(\d{4})/);
+  } else {
+    m = joined.match(/al\s+(\d{2})\/(\d{2})\/(\d{4})/);
+  }
+  if(!m) return null;
+  const [_, dd, mm, yyyy] = m;
+  return { fecha: `${yyyy}-${mm}-${dd}`, mes: `${MESES_ES[parseInt(mm,10)-1]} ${yyyy}`.replace(/^\w/, c=>c.toUpperCase()), mm: parseInt(mm,10), yyyy: parseInt(yyyy,10) };
+}
+
+let pending = {}; // keyed by fecha -> partial month record
+
+async function handleFiles(fileList){
+  const files = Array.from(fileList).filter(f=>f.type==='application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+  if(files.length===0){ logMsg('No se detectaron PDFs en lo que soltaste.', 'err'); return; }
+  for(const file of files){
+    logMsg(`Leyendo ${file.name}…`, 'info');
+    try{
+      const ab = await file.arrayBuffer();
+      const lines = await parsePdfToLines(ab);
+      const docType = detectDocType(lines);
+      if(docType==='UNKNOWN'){
+        logMsg(`No reconocí "${file.name}" como Balance General ni Estado de Resultados. Revísalo o usa la captura manual.`, 'err');
+        continue;
+      }
+      const dateInfo = extractCutoffDate(lines, docType);
+      if(!dateInfo){
+        logMsg(`No pude leer la fecha de corte en "${file.name}".`, 'err');
+        continue;
+      }
+      const key = dateInfo.fecha;
+      if(!pending[key]) pending[key] = { mes: dateInfo.mes, fecha: dateInfo.fecha, isBaseline:false };
+
+      if(docType==='BAL'){
+        const bal = await extractBalance(ab);
+        if(bal.sumaActivo==null || bal.sumaPasivo==null || bal.sumaCapital==null || bal.bancos==null || bal.clientes==null || bal.proveedores==null){
+          logMsg(`"${file.name}": no pude leer todas las cifras del Balance. Faltó: ${['bancos','clientes','activoFijo','sumaActivo','proveedores','sumaPasivo','sumaCapital'].filter(k=>bal[k]==null).join(', ')}.`, 'err');
+          continue;
+        }
+        Object.assign(pending[key], bal);
+        const check = Math.abs(bal.sumaActivo - (bal.sumaPasivo+bal.sumaCapital))/bal.sumaActivo*100;
+        if(check>0.5){
+          logMsg(`"${file.name}": leído, pero Activo (${fmtM(bal.sumaActivo)}) no cuadra con Pasivo+Capital (dif. ${check.toFixed(1)}%). Revisa el PDF.`, 'err');
+        } else {
+          logMsg(`"${file.name}": Balance General de ${dateInfo.mes} leído correctamente ✓`, 'ok');
+        }
+      } else {
+        const er = await extractEstadoResultados(ab);
+        if(er.ventas==null || er.costos==null || er.gastos==null || er.rif==null){
+          logMsg(`"${file.name}": no pude leer todas las cifras del Estado de Resultados.`, 'err');
+          continue;
+        }
+        Object.assign(pending[key], er);
+        logMsg(`"${file.name}": Estado de Resultados de ${dateInfo.mes} leído correctamente ✓`, 'ok');
+      }
+
+      const rec = pending[key];
+      const hasBal = rec.sumaActivo!==undefined;
+      const hasER = rec.ventas!==undefined;
+      if(hasBal && hasER){
+        upsertMonth(rec);
+        delete pending[key];
+        logMsg(`Listo: reporte de ${dateInfo.mes} generado y guardado en el tablero.`, 'ok');
+        switchTab('reporte');
+      } else {
+        logMsg(`Esperando el ${hasBal ? 'Estado de Resultados' : 'Balance General'} de ${dateInfo.mes} para completar el mes…`, 'info');
+      }
+    }catch(err){
+      logMsg(`Error leyendo "${file.name}": ${err.message}`, 'err');
+    }
+  }
+}
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+fileInput.addEventListener('change', (e)=> handleFiles(e.target.files));
+dropzone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', (e)=>{
+  e.preventDefault(); dropzone.classList.remove('drag');
+  if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
+
+// init
+refreshAll();
+switchTab('subir');
+</script>
+</body>
+</html>
