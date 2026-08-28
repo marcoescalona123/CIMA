@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<title>Finanzas Cima</title>
 <style>
 :root{ color-scheme: light; }
 *{box-sizing:border-box;}
@@ -22,7 +23,7 @@ body{
 .tab-btn.active{background:#0b3a63;color:#fff;border-color:#0b3a63;}
 .card{background:#fff;border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(20,30,40,.08);}
 .card h2{font-size:15px;margin:0 0 14px;color:#0b3a63;}
-.dropzone{border:2px dashed #b9cbe0; border-radius:14px; padding:28px; text-align:center; background:#f7fbff; cursor:pointer; transition:background .15s;}
+.dropzone{display:block; border:2px dashed #b9cbe0; border-radius:14px; padding:28px; text-align:center; background:#f7fbff; cursor:pointer; transition:background .15s;}
 .dropzone:hover, .dropzone.drag{background:#eaf2fb;}
 .dropzone .big{font-size:15px;font-weight:700;color:#0b3a63;margin-bottom:6px;}
 .dropzone .small{font-size:12px;color:#7a8894;}
@@ -110,29 +111,15 @@ table.hist tr:hover{background:#fafbfc;cursor:pointer;}
       <div class="logo">CI</div>
       <div>
         <h1>cima<span>ingenier</span>IA <small style="display:inline">— Finanzas Cima</small></h1>
-        <small>Sube los PDFs del mes y el reporte se arma solo</small>
+        <small>Reporte financiero mensual de Cima</small>
       </div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" data-tab="subir">Subir PDFs</button>
-      <button class="tab-btn" data-tab="reporte">Reporte del mes</button>
+      <button class="tab-btn active" data-tab="reporte">Reporte del mes</button>
       <button class="tab-btn" data-tab="acumulado">Acumulado y Forecast</button>
       <button class="tab-btn" data-tab="comparativo">Vs. Diciembre</button>
       <button class="tab-btn" data-tab="historial">Historial</button>
       <button class="tab-btn" data-tab="capturar">Captura manual</button>
-    </div>
-  </div>
-
-  <!-- TAB: SUBIR PDFS (principal) -->
-  <div id="tab-subir">
-    <div class="card">
-      <h2>Sube el Balance General y el Estado de Resultados del mes</h2>
-      <label class="dropzone" id="dropzone">
-        <div class="big">Arrastra aquí los 2 PDFs, o haz clic para elegirlos</div>
-        <div class="small">Los que te envía tu contador cada mes, tal cual — sin abrirlos ni cambiarles nada. Puedes soltar los 2 juntos o uno a la vez.</div>
-        <input type="file" id="fileInput" accept="application/pdf" multiple>
-      </label>
-      <div id="uploadLog"></div>
     </div>
   </div>
 
@@ -490,7 +477,8 @@ const SEED = [
 {"mes":"Marzo 2026","fecha":"2026-03-31","isBaseline":false,"bancos":2938471.06,"clientes":26691632.81,"activoFijo":1873123.02,"sumaActivo":43064312.12,"proveedores":17768520.66,"sumaPasivo":31221586.64,"sumaCapital":11842725.55,"ventas":6405478.43,"costos":1185859.89,"gastos":2359996.57,"rif":79106.09,"acumVentas":11062073.16,"acumCostos":2655317.27,"acumGastos":7009932.86,"acumRif":193339.24},
 {"mes":"Abril 2026","fecha":"2026-04-30","isBaseline":false,"bancos":2899431.61,"clientes":21941292.20,"activoFijo":2039914.69,"sumaActivo":38711690.46,"proveedores":16470711.11,"sumaPasivo":27461554.80,"sumaCapital":11250135.73,"ventas":5447464.50,"costos":769817.55,"gastos":5149214.40,"rif":121022.37,"acumVentas":16509537.66,"acumCostos":3442438.69,"acumGastos":12159147.26,"acumRif":314361.61},
 {"mes":"Mayo 2026","fecha":"2026-05-31","isBaseline":false,"bancos":2888022.09,"clientes":21333486.58,"activoFijo":2034706.36,"sumaActivo":38354496.04,"proveedores":16377039.86,"sumaPasivo":27413084.31,"sumaCapital":10941411.80,"ventas":1397894.43,"costos":515129.74,"gastos":1156556.34,"rif":34932.28,"acumVentas":17907432.09,"acumCostos":3957568.43,"acumGastos":13315703.60,"acumRif":349293.89},
-{"mes":"Junio 2026","fecha":"2026-06-30","isBaseline":false,"bancos":2974629.86,"clientes":22084549.85,"activoFijo":2029498.03,"sumaActivo":39131031.44,"proveedores":15786075.07,"sumaPasivo":27411802.36,"sumaCapital":11719229.15,"ventas":2035201.90,"costos":295024.08,"gastos":915659.42,"rif":46701.05,"acumVentas":19942633.99,"acumCostos":4252592.51,"acumGastos":14231363.02,"acumRif":395994.94}
+{"mes":"Junio 2026","fecha":"2026-06-30","isBaseline":false,"bancos":2974629.86,"clientes":22084549.85,"activoFijo":2029498.03,"sumaActivo":39131031.44,"proveedores":15786075.07,"sumaPasivo":27411802.36,"sumaCapital":11719229.15,"ventas":2035201.90,"costos":295024.08,"gastos":915659.42,"rif":46701.05,"acumVentas":19942633.99,"acumCostos":4252592.51,"acumGastos":14231363.02,"acumRif":395994.94},
+{"mes":"Julio 2026","fecha":"2026-07-31","isBaseline":false,"bancos":2913225.49,"clientes":22263795.29,"activoFijo":2029498.03,"sumaActivo":39993483.78,"proveedores":15754784.41,"sumaPasivo":28679842.44,"sumaCapital":11313641.41,"ventas":4328044.75,"costos":347937.52,"gastos":4329558.56,"rif":56136.41,"acumVentas":24270678.74,"acumCostos":4600530.03,"acumGastos":18560921.58,"acumRif":452131.35}
 ]
 ;
 const STORE_KEY = "cima_finanzas_meses_v3";
@@ -731,7 +719,7 @@ function deleteMonth(i){
 
 function switchTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
-  ['subir','reporte','acumulado','comparativo','historial','capturar'].forEach(t=>{
+  ['reporte','acumulado','comparativo','historial','capturar'].forEach(t=>{
     document.getElementById('tab-'+t).style.display = (t===name)?'block':'none';
   });
 }
@@ -880,19 +868,9 @@ async function handleFiles(fileList){
   }
 }
 
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('fileInput');
-fileInput.addEventListener('change', (e)=> handleFiles(e.target.files));
-dropzone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropzone.classList.add('drag'); });
-dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
-dropzone.addEventListener('drop', (e)=>{
-  e.preventDefault(); dropzone.classList.remove('drag');
-  if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
-});
-
 // init
 refreshAll();
-switchTab('subir');
+switchTab('reporte');
 </script>
 </body>
 </html>
