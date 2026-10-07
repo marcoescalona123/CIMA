@@ -1,0 +1,129 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Cima — Tablero Realista</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}
+body{margin:0;padding:24px;background:#f4f5f7;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#1c2b36}
+.wrap{max-width:1120px;margin:0 auto}.brand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.logo{width:36px;height:36px;border-radius:50%;background:#0b3a63;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+h1{font-size:20px;margin:0}h1 span{color:#e2231a}.sub{font-size:12px;color:#7a8894;margin-bottom:16px}
+.card{background:#fff;border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(20,30,40,.08)}
+.card h2{font-size:15px;margin:0 0 12px;color:#0b3a63}.note{font-size:12px;color:#8b97a1;margin:-6px 0 12px}
+.kpis{display:flex;gap:14px;flex-wrap:wrap}.kpi{flex:1;min-width:200px;background:#f7fbff;border-radius:12px;padding:14px}
+.kpi small{display:block;font-size:11px;color:#7a8894;text-transform:uppercase;letter-spacing:.03em}.kpi b{font-size:22px;color:#0b3a63}
+.kpi.bad b{color:#c0201a}.kpi.good b{color:#0a8a3f}.kpi span{display:block;font-size:11px;color:#8b97a1;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:right;font-size:11px;text-transform:uppercase;color:#7a8894;padding:8px;background:#f7f9fa}
+td{text-align:right;padding:8px;border-bottom:1px solid #eef1f3}th:first-child,td:first-child{text-align:left}
+.neg{color:#c0201a;font-weight:700}.pos{color:#0a8a3f;font-weight:700}
+.fx{display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:14px;flex-wrap:wrap}.fx input{width:80px;padding:6px 8px;border:1px solid #d8dde2;border-radius:8px;font-size:14px}
+.warn{background:#fff8e6;border:1px solid #f0e0b0;color:#7a5c00;font-size:12px;padding:10px 14px;border-radius:8px;margin-bottom:14px;line-height:1.5}
+.bar{height:14px;background:#173f5c;border-radius:3px}.bar.o{background:#e2231a;opacity:.85}
+.leg{font-size:12px;color:#45525c;margin-bottom:8px}.leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 12px}
+.mrow{display:grid;grid-template-columns:80px 1fr 90px;gap:8px;align-items:center;margin-bottom:6px;font-size:12px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab{padding:8px 16px;border-radius:20px;border:1px solid #d8dde2;background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:#45525c}.tab.active{background:#0b3a63;color:#fff;border-color:#0b3a63}
+.list{margin:0;padding-left:20px;font-size:14px;line-height:1.55}.list li{margin-bottom:8px}
+.rec li{text-transform:uppercase;font-weight:700;color:#7a1410}.rec{background:#fff4f3;border-radius:10px;padding:14px 14px 14px 34px;margin:0}
+.sel{width:100%;padding:6px 8px;border:1px solid #d8dde2;border-radius:8px;font-size:13px}
+</style></head><body><div class="wrap">
+<div class="brand"><div class="logo">CI</div><h1>cima<span>ingenier</span>IA <small style="font-size:13px;color:#7a8894;font-weight:400">— Tablero Realista</small></h1></div>
+<div class="sub">Facturación y cobranza real (Excel de facturación) vs. cifras contables. Enero – Septiembre 2026. Complementa al tablero contable, no lo reemplaza.</div>
+<div class="card"><div class="fx">Tipo de cambio para facturas en USD (MXN por USD): <input id="fx" type="number" step="0.1" value="17.5"> <span style="color:#8b97a1;font-size:12px">Referencia: dólar entre 16.9 y 18.1 en septiembre 2026. Cambia el valor y todo se recalcula.</span></div>
+<div class="warn">Este tablero solo conoce <b>ingresos y cobranza</b> (los Excel no traen gastos, proveedores ni bancos). Los gastos del "resultado aproximado" salen de la contabilidad y no están verificados. Todo importe es sin IVA, salvo la tabla de cuentas por cobrar.</div>
+<div class="kpis" id="kpis"></div></div>
+<div class="tabs" id="tabs"></div>
+<div id="p1"><div class="card"><h2>Hallazgos</h2><ul class="list">
+<li>Las cuentas por cobrar reales son menos de $1M. La contabilidad reporta ~$22M, así que ~$21M no tienen sustento en la cobranza.</li>
+<li>La venta real de enero a agosto (~$23M con dólar a 17.5) es menor que la contable (~$27M). Las ventas contables están infladas.</li>
+<li>Con ventas reales, enero a agosto da una pérdida aproximada de ~$2.6M, y no una utilidad de +$1.0M. Solo marzo fue claramente positivo.</li>
+<li>Se cobra rápido (~13 días en promedio, casi todo contra entrega), por lo que no hay cartera que financie la operación. Cuando se vende poco, no entra dinero.</li>
+<li>Los costos y gastos (~$3.2M al mes) superan la venta promedio (~$2.9M al mes). La diferencia se financia con proveedores, y por eso la deuda crece.</li>
+<li>Los gastos generales se disparan en enero, abril y julio, justo cuando la venta no los cubre.</li>
+<li>Dos clientes concentran 55% de la venta (Caribbean Bottling y Industria Envasadora de Querétaro).</li>
+<li>Hay un volumen alto de facturas canceladas y notas de crédito (ver pestaña Clientes y cancelaciones).</li></ul></div>
+<div class="card"><h2>Por confirmar (falta para cerrar el análisis)</h2><ul class="list">
+<li>Nómina mensual: cuánto se paga y cuánto es de socios y cuánto de empleados. No tenemos esa información.</li>
+<li>Deuda real por acreedor: cuánto se debe a proveedores, a bancos y al SAT, con fechas de vencimiento. Es el dato más importante para dimensionar el problema.</li>
+<li>Antigüedad de saldos de proveedores y acreedores: si los $15.2M y $2.5M son deuda real.</li>
+<li>Saldo real de bancos (estados de cuenta). La contabilidad dice $2.9M.</li>
+<li>Activos: lista y valor comercial de lo que se podría vender (autos, equipo).</li>
+<li>Saldos a favor del SAT (~$1.4M de impuestos a favor, más IVA acreditable y pagos provisionales): cuánto se puede recuperar en efectivo.</li>
+<li>Detalle de gastos generales, sobre todo enero, abril y julio.</li>
+<li>Si las cancelaciones son reexpediciones o ventas que no se concretaron.</li>
+<li>Tipo de cambio real de las facturas en USD.</li>
+<li>Estados contables de septiembre.</li>
+<li>Qué socio generó cada venta (los Excel no lo traen; ver sección al final).</li></ul></div>
+<div class="card"><h2>Opciones para resolver (panorama completo)</h2><table>
+<tr><th>Opción</th><th>Qué aporta</th><th>Riesgo / condición</th></tr>
+<tr><td>1. Candados a socios</td><td>Baja el gasto fijo y el punto de equilibrio</td><td>Solo aplica a socios. Al personal operativo hay que pagarle al menos el salario mínimo</td></tr>
+<tr><td>2. Venta de activos (autos, equipo)</td><td>Efectivo inmediato sin deuda. Valor en libros de los activos fijos: ~$2.0M (autos $1.34M brutos)</td><td>Puede causar ISR e IVA, y quitar capacidad operativa. Dar en arrendamiento al vender (leaseback) puede ser alternativa</td></tr>
+<tr><td>3. Recuperar saldos a favor del SAT</td><td>Posible entrada de efectivo (~$1.4M en libros)</td><td>Hay que confirmar que sean recuperables y el tiempo del trámite</td></tr>
+<tr><td>4. Negociar con proveedores y acreedores</td><td>Alarga plazos y frena el crecimiento de la deuda</td><td>Necesita saber qué es real y qué vence primero</td></tr>
+<tr><td>5. Los socios inyectan recursos para compensar la pérdida</td><td>Capital sin intereses. Pérdida aprox. de ene–ago: ~$2.6M, es decir ~$0.87M por socio si los tres tienen 33%</td><td>Si un socio aporta menos, quien aporte más puede quedar como mayoritario. Se formaliza con aumento de capital en asamblea, con apoyo de abogado o notario</td></tr>
+<tr><td>6. Crédito PYME</td><td>Refinancia deuda cara a plazo largo. Rango preliminar $2M–$3.5M</td><td>Solo después de los candados y del plan. Se debe presentar información depurada, no la inflada</td></tr>
+<tr><td>7. Más ventas y anticipos</td><td>Reduce la dependencia de dos clientes y mejora la caja</td><td>Requiere tiempo</td></tr></table></div>
+<div class="card"><h2>Recomendaciones (en orden de ejecución)</h2><ol class="list rec">
+<li>Candado de socios: los socios, y solo los socios, no cobran si no venden, y cobran hasta que el cliente haya pagado.</li>
+<li>No autorizar ningún gasto general por encima de lo cobrado el mes anterior.</li>
+<li>Entregar en una semana: nómina por persona, deuda por acreedor con vencimientos, estados de cuenta del banco y lista de activos con valor comercial.</li>
+<li>Con esa información, terminar el análisis del monto y las condiciones del crédito PYME antes de solicitarlo.</li>
+<li>Los socios inyectan recursos para compensar la pérdida. Si todos tienen 33%, cada uno aporta la misma parte; quien aporte más, se vuelve socio mayoritario.</li><li>Valorar la venta de activos no indispensables para la operación, y confirmar el efecto fiscal antes de venderlos.</li>
+<li>Gestionar la recuperación de los saldos a favor del SAT.</li>
+<li>Solicitar el crédito PYME solo después de los candados, con estados financieros depurados y con mensualidad máxima de 10% a 15% de lo cobrado.</li>
+<li>Abrir negociación de plazos con los proveedores más grandes y priorizar la deuda con el SAT.</li></ol></div>
+<div class="card"><h2>Facturado real vs. ventas contables (por mes)</h2><div class="note">Facturado real = facturas no canceladas, netas de notas de crédito, sin IVA.</div><table id="t1"></table></div>
+<div class="card"><h2>Facturado vs. cobrado por mes</h2><div class="leg"><i style="background:#173f5c"></i>Facturado<i style="background:#e2231a"></i>Cobrado</div><div id="bars"></div></div><div class="card"><h2>Ventas por socio</h2><div class="note">Los Excel no indican quién vendió. Asigna un socio a cada cliente (se guarda en este navegador) o mándame la lista y la dejo fija en el tablero.</div><div class="leg" id="socsum"></div><table id="t5"></table></div></div>
+<div id="p2" style="display:none"><div class="card"><h2>Cuentas por cobrar reales vs. contables</h2><div id="arcmp" class="kpis"></div></div>
+<div class="card"><h2>Facturas pendientes de cobro (con IVA)</h2><table id="t2"></table></div></div>
+<div id="p3" style="display:none"><div class="card"><h2>Resultado aproximado (ventas reales vs. gastos contables)</h2><div class="note">Resultado aproximado = facturado real − (costos + gastos + RIF contables). Orientativo.</div><table id="t3"></table></div></div>
+<div id="p4" style="display:none"><div class="card"><h2>Concentración por cliente (facturado, sin IVA)</h2><table id="t4"></table></div><div class="card"><h2>Cancelaciones y notas de crédito</h2><div id="cn"></div></div></div>
+</div><script>
+const D={"bill": {"1": {"USD": 88463.98, "MXN": 63520}, "2": {"USD": 35912.89, "MXN": 61146.53}, "3": {"USD": 417438.8, "MXN": 35000}, "4": {"USD": 305965.79, "MXN": 0}, "5": {"USD": 67055.18, "MXN": 659942}, "6": {"USD": 63965.25, "MXN": 234690}, "7": {"USD": 214825.77, "MXN": 71530}, "8": {"USD": 51422.5, "MXN": 320000}, "9": {"USD": 246930.0, "MXN": 150890}}, "col": {"1": {"USD": 88147.06, "MXN": 63520}, "2": {"USD": 27668.91, "MXN": 0}, "3": {"USD": 164645.9, "MXN": 36146.53}, "4": {"USD": 384980.35, "MXN": 0}, "5": {"USD": 41255.18, "MXN": 523742}, "6": {"USD": 89765.25, "MXN": 74400}, "7": {"USD": 334087.77, "MXN": 207730}, "8": {"USD": 48260, "MXN": 480290}, "9": {"USD": 207417.5, "MXN": 100000}}, "cust": [{"n": "Sociedad Cooperativa Trabajadores De Pascual", "USD": 20001.4, "MXN": 0}, {"n": "Oscar Genaro Martinez Seañez", "USD": 0, "MXN": 118520}, {"n": "Cima Distribucion Electrica Mexicana", "USD": 15227.24, "MXN": 1146.53}, {"n": "Caribbean Bottling Company", "USD": 483897.83, "MXN": 0}, {"n": "Bufete De Refrigeracion Industrial", "USD": 158470, "MXN": 136200}, {"n": "Pebsa Ingenieria Electromecanica", "USD": 0, "MXN": 140000}, {"n": "Luis Borioli", "USD": 123939.5, "MXN": 0}, {"n": "Rr Refrigeracion Industrial Aplicada", "USD": 118379.4, "MXN": 0}, {"n": "Embotelladora Mexicana De Bebidas Refrescantes", "USD": 48827.17, "MXN": 320000}, {"n": "Servicios Refresqueros Del Golfo Y Bajio", "USD": 27535.62, "MXN": 71530}, {"n": "Refrescos Victoria Del Centro", "USD": 76537, "MXN": 350542}, {"n": "Termofrio", "USD": 0, "MXN": 173200}, {"n": "Frioingenieria", "USD": 725, "MXN": 0}, {"n": "Basf Mexicana", "USD": 0, "MXN": 211180}, {"n": "Yoli De Acapulco", "USD": 0, "MXN": 74400}, {"n": "Industria Envasadora De Queretaro", "USD": 382000.0, "MXN": 0}, {"n": "Gigante Verde", "USD": 36440, "MXN": 0}], "pend": [{"f": "A3387 (50% restante)", "c": "Bufete De Refrigeracion Industrial", "cur": "USD", "tot": 7232.6, "fecha": "02/09/2026", "plazo": "30 DÍAS"}, {"f": "B1005", "c": "Gigante Verde", "cur": "USD", "tot": 42270.4, "fecha": "09/09/2026", "plazo": "90 DÍAS"}, {"f": "A3389", "c": "Basf Mexicana", "cur": "MXN", "tot": 59032.4, "fecha": "11/09/2026", "plazo": "60 DÍAS"}], "canc": {"USD": 794492.5, "MXN": 82949.57}, "nc": {"USD": 250631, "MXN": 0}};
+const ACC={ventas:[3394335.16,1262259.57,6405478.43,5447464.50,1397894.43,2035201.90,4328044.75,2689062.87],costos:[674419.36,735875.82,1185859.89,769817.55,515129.74,295024.08,347937.52,324485.37],gastos:[3492396.98,1136705.99,2359996.57,5149214.40,1156556.34,915659.42,4329558.56,1933144.70],rif:[63069.28,51163.87,79106.09,121022.37,34932.28,46701.05,56136.41,69032.58]};
+const CXC_CONT=21989633.84,PROV_CONT=15185136.92,BANCOS=2930646.41;
+const MES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep'];
+const M=v=>(v<0?'-':'')+'$'+(Math.abs(v)/1e6).toFixed(2)+'M',P=v=>'$'+Math.round(v).toLocaleString('es-MX');
+const cl=v=>'<span class="'+(v<0?'neg':'pos')+'">'+M(v)+'</span>';
+function go(){const fx=parseFloat(document.getElementById('fx').value)||17.5;
+const b=m=>D.bill[m].USD*fx+D.bill[m].MXN,c=m=>D.col[m].USD*fx+D.col[m].MXN;
+let B=[],C=[];for(let m=1;m<=9;m++){B.push(b(m));C.push(c(m));}
+const sB8=B.slice(0,8).reduce((a,x)=>a+x,0),sV8=ACC.ventas.reduce((a,x)=>a+x,0),
+exp=ACC.costos.map((x,i)=>x+ACC.gastos[i]+ACC.rif[i]),sE=exp.reduce((a,x)=>a+x,0),
+real=B.slice(0,8).map((x,i)=>x-exp[i]),sR=sB8-sE,sC=C.reduce((a,x)=>a+x,0),sB=B.reduce((a,x)=>a+x,0);
+const pend=D.pend.reduce((a,p)=>a+p.tot*(p.cur=='USD'?fx:1),0);
+document.getElementById('kpis').innerHTML=
+`<div class="kpi"><small>Facturado real Ene–Ago</small><b>${M(sB8)}</b><span>Contable: ${M(sV8)}</span></div>
+<div class="kpi bad"><small>Resultado aprox. Ene–Ago</small><b>${M(sR)}</b><span>Contable: +$1.02M</span></div>
+<div class="kpi good"><small>Cuentas por cobrar reales</small><b>${M(pend)}</b><span>Contable: ${M(CXC_CONT)}</span></div>
+<div class="kpi"><small>Cobrado Ene–Sep (sin IVA)</small><b>${M(sC)}</b><span>Facturado Ene–Sep: ${M(sB)}</span></div>`;
+let h='<tr><th>Mes</th><th>Facturado real</th><th>Ventas contables</th><th>Diferencia</th></tr>';
+for(let i=0;i<8;i++)h+=`<tr><td>${MES[i]}</td><td>${M(B[i])}</td><td>${M(ACC.ventas[i])}</td><td>${cl(B[i]-ACC.ventas[i])}</td></tr>`;
+h+=`<tr><td>${MES[8]}</td><td>${M(B[8])}</td><td>—</td><td>(sin PDFs contables)</td></tr><tr><td><b>Ene–Ago</b></td><td><b>${M(sB8)}</b></td><td><b>${M(sV8)}</b></td><td>${cl(sB8-sV8)}</td></tr>`;
+document.getElementById('t1').innerHTML=h;
+const mx=Math.max(...B,...C);let bars='';
+for(let i=0;i<9;i++)bars+=`<div class="mrow"><div>${MES[i]}</div><div><div class="bar" style="width:${B[i]/mx*100}%"></div><div class="bar o" style="width:${C[i]/mx*100}%;margin-top:3px"></div></div><div>${M(B[i])} / ${M(C[i])}</div></div>`;
+document.getElementById('bars').innerHTML=bars;
+document.getElementById('arcmp').innerHTML=`<div class="kpi good"><small>Real (facturas pendientes)</small><b>${M(pend)}</b></div><div class="kpi bad"><small>Contable (Clientes, ago)</small><b>${M(CXC_CONT)}</b></div><div class="kpi"><small>Diferencia sin sustento</small><b>${M(CXC_CONT-pend)}</b><span>Depende de la antigüedad de saldos que entregue la contadora</span></div>`;
+let t='<tr><th>Factura</th><th>Cliente</th><th>Fecha</th><th>Plazo</th><th>Importe</th><th>Moneda</th></tr>';
+D.pend.forEach(p=>t+=`<tr><td>${p.f}</td><td style="text-align:left">${p.c}</td><td>${p.fecha}</td><td>${p.plazo}</td><td>${P(p.tot)}</td><td>${p.cur}</td></tr>`);
+document.getElementById('t2').innerHTML=t;
+let r='<tr><th>Mes</th><th>Facturado real</th><th>Costos+gastos+RIF contables</th><th>Resultado aprox.</th></tr>';
+for(let i=0;i<8;i++)r+=`<tr><td>${MES[i]}</td><td>${M(B[i])}</td><td>${M(exp[i])}</td><td>${cl(real[i])}</td></tr>`;
+r+=`<tr><td><b>Ene–Ago</b></td><td><b>${M(sB8)}</b></td><td><b>${M(sE)}</b></td><td>${cl(sR)}</td></tr>`;
+document.getElementById('t3').innerHTML=r;
+const cu=D.cust.map(x=>({n:x.n,v:x.USD*fx+x.MXN})).sort((a,b)=>b.v-a.v),tot=cu.reduce((a,x)=>a+x.v,0);
+let k='<tr><th>Cliente</th><th>Facturado</th><th>% del total</th></tr>';
+cu.forEach(x=>k+=`<tr><td>${x.n}</td><td>${M(x.v)}</td><td>${(x.v/tot*100).toFixed(1)}%</td></tr>`);
+document.getElementById('t4').innerHTML=k;
+document.getElementById('cn').innerHTML=`<div class="kpis"><div class="kpi"><small>Facturas canceladas</small><b>${M(D.canc.USD*fx+D.canc.MXN)}</b><span>Incluye reexpediciones</span></div><div class="kpi"><small>Notas de crédito</small><b>${M(D.nc.USD*fx+D.nc.MXN)}</b></div></div>`;}
+const names=['Facturación y cobranza','Cuentas por cobrar','Resultado aproximado','Clientes y cancelaciones'];
+const tb=document.getElementById('tabs');names.forEach((n,i)=>{const b=document.createElement('button');b.className='tab'+(i?'':' active');b.textContent=n;b.onclick=()=>{[...tb.children].forEach((x,j)=>x.classList.toggle('active',i==j));for(let j=1;j<=4;j++)document.getElementById('p'+j).style.display=(j==i+1)?'block':'none'};tb.appendChild(b)});
+document.getElementById('fx').addEventListener('input',go);go();
+
+let SOC={};try{SOC=JSON.parse(localStorage.getItem('cima_socios')||'{}')}catch(e){}
+function socios(){const fx=parseFloat(document.getElementById('fx').value)||17.5;
+const cu=D.cust.map(x=>({n:x.n,v:x.USD*fx+x.MXN})).sort((a,b)=>b.v-a.v);
+let h='<tr><th>Cliente</th><th>Facturado</th><th>Socio</th></tr>';
+cu.forEach((x,i)=>h+=`<tr><td>${x.n}</td><td>${M(x.v)}</td><td><input class="sel" data-n="${x.n}" value="${(SOC[x.n]||'').replace(/"/g,'')}" placeholder="Sin asignar"></td></tr>`);
+document.getElementById('t5').innerHTML=h;
+document.querySelectorAll('#t5 input').forEach(i=>i.oninput=()=>{SOC[i.dataset.n]=i.value.trim();try{localStorage.setItem('cima_socios',JSON.stringify(SOC))}catch(e){}sum()});sum();
+function sum(){const t={};cu.forEach(x=>{const k=SOC[x.n]||'Sin asignar';t[k]=(t[k]||0)+x.v});document.getElementById('socsum').innerHTML=Object.entries(t).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<b>${k}</b>: ${M(v)}`).join(' &nbsp;|&nbsp; ')}}
+document.getElementById('fx').addEventListener('input',socios);socios();
+</script></body></html>
